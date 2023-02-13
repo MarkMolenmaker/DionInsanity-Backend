@@ -16,22 +16,32 @@ public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-
+	private String twitchId;
 	private String username;
-
-	private String email;
-
 	@JsonIgnore
 	private String password;
+	private String displayName;
+	private String email;
+	private String profileImageUrl;
+	@JsonIgnore
+	private String accessToken;
+	@JsonIgnore
+	private String refreshToken;
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(String id, String username, String email, String password,
-			Collection<? extends GrantedAuthority> authorities) {
+	public UserDetailsImpl(String id, String twitchId, String username, String password, String displayName, String email,
+						   String profileImageUrl, String accessToken, String refreshToken,
+						   Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
+		this.twitchId = twitchId;
 		this.username = username;
-		this.email = email;
 		this.password = password;
+		this.displayName = displayName;
+		this.email = email;
+		this.profileImageUrl = profileImageUrl;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 		this.authorities = authorities;
 	}
 
@@ -41,24 +51,21 @@ public class UserDetailsImpl implements UserDetails {
 				.collect(Collectors.toList());
 
 		return new UserDetailsImpl(
-				user.getId(), 
-				user.getUsername(), 
+				user.getId(),
+				user.getTwitchId(),
+				user.getUsername(),
+				user.getPassword(),
+				user.getDisplayName(),
 				user.getEmail(),
-				user.getPassword(), 
+				user.getProfileImageUrl(),
+				user.getAccessToken(),
+				user.getRefreshToken(),
 				authorities);
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getEmail() {
-		return email;
 	}
 
 	@Override
@@ -69,6 +76,26 @@ public class UserDetailsImpl implements UserDetails {
 	@Override
 	public String getUsername() {
 		return username;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getTwitchId() {
+		return twitchId;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 	@Override
