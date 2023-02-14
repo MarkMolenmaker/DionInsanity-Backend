@@ -1,15 +1,19 @@
 package com.markmolenmaker.dioninsanity.backend.payload.response.cluebingo;
 
+import java.util.Map;
+
 public class BingoCardResponse {
 
     private String id;
-    private String user;
+    private String owner;
     private String[] layout;
+    private Map<String, Integer> loot;
 
-    public BingoCardResponse(String id, String user, String[] layout) {
+    public BingoCardResponse(String id, String owner, String[] layout, Map<String, Integer> loot) {
         this.id = id;
-        this.user = user;
+        this.owner = owner;
         this.layout = layout;
+        this.loot = loot;
     }
 
     public String getId() {
@@ -20,12 +24,12 @@ public class BingoCardResponse {
         this.id = id;
     }
 
-    public String getUser() {
-        return user;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setOwner(String user) {
+        this.owner = user;
     }
 
     public String[] getLayout() {
@@ -36,4 +40,11 @@ public class BingoCardResponse {
         this.layout = layout;
     }
 
+    public Map<String, Integer> getLoot() {
+        return loot;
+    }
+
+    public void setLoot(Map<String, Integer> loot) {
+        this.loot = this.loot;
+    }
 }

@@ -8,32 +8,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "bingocards")
+@Document(collection = "bingo_cards")
 public class BingoCard {
 
     @Id
     private String id;
 
     @DBRef
-    private User user;
+    private User owner;
 
     @DBRef
-    private List<Loot> loot = new ArrayList<>();
+    private List<Item> layout = new ArrayList<>();
 
-    public BingoCard() {
-    }
-
-    public BingoCard(User user) {
-        this.user = user;
-        for (int i = 0; i < 25; i++) {
-            // Add a random loot item to the card, but make sure it's not a duplicate
-            Loot lootItem = new Loot(ELoot.getRandomELoot());
-            while (loot.contains(lootItem)) {
-                lootItem = new Loot(ELoot.getRandomELoot());
-            }
-            loot.add(lootItem);
-        }
-    }
+    public BingoCard() {}
 
     public String getId() {
         return id;
@@ -43,19 +30,20 @@ public class BingoCard {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
-    public List<Loot> getLoot() {
-        return loot;
+    public List<Item> getLayout() {
+        return layout;
     }
 
-    public void setLoot(List<Loot> loot) {
-        this.loot = loot;
+    public void setLayout(List<Item> layout) {
+        this.layout = layout;
     }
+
 }

@@ -3,18 +3,18 @@ package com.markmolenmaker.dioninsanity.backend.models.cluebingo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "loot")
-public class Loot {
+@Document(collection = "items")
+public class Item {
 
     @Id
     private String id;
 
-    private ELoot name;
+    private EItem name;
 
-    public Loot() {
+    public Item() {
     }
 
-    public Loot(ELoot name) {
+    public Item(EItem name) {
         this.name = name;
     }
 
@@ -26,11 +26,11 @@ public class Loot {
         this.id = id;
     }
 
-    public ELoot getName() {
+    public EItem getName() {
         return name;
     }
 
-    public void setName(ELoot name) {
+    public void setName(EItem name) {
         this.name = name;
     }
 
