@@ -88,7 +88,8 @@ public class TwitchAuthorizationService {
             // If User doesn't exist, create new user
             if (!userRepository.existsByUsername(username)) {
                 // Create new user's account
-                User user = new User(twitchId, username, encoder.encode(password), displayName, email, profileImageUrl, encoder.encode(accessToken), encoder.encode(refreshToken));
+                User user = new User(twitchId, username, encoder.encode(password), displayName, email, profileImageUrl,
+                        accessToken, refreshToken);
 
                 Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -99,6 +100,13 @@ public class TwitchAuthorizationService {
 
             // Get user from database
             User user = userRepository.findByUsername(username).get();
+
+            // Update user info
+            user.setDisplayName(displayName);
+            user.setProfileImageUrl(profileImageUrl);
+            user.setAccessToken(accessToken);
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
 
             // Signin
             Authentication authentication = authenticationManager.authenticate(
