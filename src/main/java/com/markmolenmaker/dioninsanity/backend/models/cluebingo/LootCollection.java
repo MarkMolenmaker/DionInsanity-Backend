@@ -60,4 +60,7 @@ public class LootCollection {
         }
     }
 
+    public void reset() {
+        items.replaceAll((k, v) -> 0);
+    }
 }

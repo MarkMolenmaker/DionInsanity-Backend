@@ -2,9 +2,11 @@ package com.markmolenmaker.dioninsanity.backend.controllers;
 
 import com.markmolenmaker.dioninsanity.backend.application.TwitchInformationService;
 import com.markmolenmaker.dioninsanity.backend.payload.error.TwitchAccountNotFoundException;
+import com.markmolenmaker.dioninsanity.backend.payload.error.TwitchAuthorizationException;
 import com.markmolenmaker.dioninsanity.backend.payload.response.TwitchAccountResponse;
 import com.markmolenmaker.dioninsanity.backend.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,11 @@ public class TwitchInformationController {
         String username = jwtUtils.getUserNameFromJwtToken(token.split(" ")[1].trim());
         TwitchAccountResponse twitchAccountResponse = twitchInformationService.searchTwitchAccount(username, login);
         return ResponseEntity.ok(twitchAccountResponse);
+    }
+
+    @ExceptionHandler(TwitchAuthorizationException.class)
+    public ResponseEntity<?> handleTwitchAuthorizationException(TwitchAuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     @ExceptionHandler(TwitchAccountNotFoundException.class)

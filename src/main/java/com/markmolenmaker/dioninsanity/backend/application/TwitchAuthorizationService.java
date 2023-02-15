@@ -3,9 +3,11 @@ package com.markmolenmaker.dioninsanity.backend.application;
 import com.markmolenmaker.dioninsanity.backend.models.ERole;
 import com.markmolenmaker.dioninsanity.backend.models.Role;
 import com.markmolenmaker.dioninsanity.backend.models.User;
+import com.markmolenmaker.dioninsanity.backend.models.cluebingo.LootCollection;
 import com.markmolenmaker.dioninsanity.backend.payload.response.JwtResponse;
 import com.markmolenmaker.dioninsanity.backend.repository.RoleRepository;
 import com.markmolenmaker.dioninsanity.backend.repository.UserRepository;
+import com.markmolenmaker.dioninsanity.backend.repository.cluebingo.LootCollectionRepository;
 import com.markmolenmaker.dioninsanity.backend.security.jwt.JwtUtils;
 import com.markmolenmaker.dioninsanity.backend.security.services.UserDetailsImpl;
 import com.mashape.unirest.http.HttpResponse;
@@ -38,6 +40,9 @@ public class TwitchAuthorizationService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    LootCollectionRepository lootCollectionRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -101,12 +106,28 @@ public class TwitchAuthorizationService {
             // Get user from database
             User user = userRepository.findByUsername(username).get();
 
+            // Check if user has registered with email
+            if (user.getEmail() == null) {
+                user.setEmail(email);
+                user.setPassword(encoder.encode(password));
+                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                user.addRole(userRole);
+            }
+
             // Update user info
             user.setDisplayName(displayName);
             user.setProfileImageUrl(profileImageUrl);
             user.setAccessToken(accessToken);
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
+
+            // Create loot collection if it doesn't exist
+            if (!lootCollectionRepository.existsByOwner(user)) {
+                LootCollection lootCollection = new LootCollection();
+                lootCollection.setOwner(user);
+                lootCollectionRepository.save(lootCollection);
+            }
 
             // Signin
             Authentication authentication = authenticationManager.authenticate(

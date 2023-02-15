@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClueBingoService {
@@ -42,6 +43,9 @@ public class ClueBingoService {
             bingoCardRepository.delete(generalBingoCard);
         }
 
+        // Delete all Bingo Cards
+        bingoCardRepository.deleteAll();
+
         // Create a new General Bingo Card
         BingoCard generalBingoCard = new BingoCard();
         generalBingoCard.setOwner(generalBingoCardOwner);
@@ -61,6 +65,11 @@ public class ClueBingoService {
         generalBingoCard.setLayout(layout);
 
         bingoCardRepository.save(generalBingoCard);
+
+        // Reset the LootCollection for the General Bingo Card
+        LootCollection generalBingoCardLootCollection = lootCollectionRepository.findByOwner(generalBingoCardOwner);
+        generalBingoCardLootCollection.reset();
+        lootCollectionRepository.save(generalBingoCardLootCollection);
 
         return getGeneralBingoCard();
     }
@@ -157,4 +166,79 @@ public class ClueBingoService {
         lootCollectionRepository.save(lootCollection);
     }
 
+    public BingoCardResponse addBingoCardToUser(String id) {
+        // Find the user
+        User owner = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Could not find user with id: " + id));
+
+        // Create a new General Bingo Card
+        BingoCard bingoCard = new BingoCard();
+        bingoCard.setOwner(owner);
+
+        // Generate a random layout for the Bingo Card
+        List<Item> layout = new ArrayList<>();
+
+        // Layout based on the General Bingo Card
+        List<EItem> items = Arrays.stream(getGeneralBingoCard().getLayout()).map(EItem::valueOf).collect(Collectors.toList());
+        for (int i = 0; i < 25; i++) {
+            int randomIndex = (int) (Math.random() * items.size());
+            Item item = itemRepository.findByName(items.get(randomIndex).name());
+            items.remove(randomIndex);
+            layout.add(item);
+        }
+        bingoCard.setLayout(layout);
+
+        bingoCardRepository.save(bingoCard);
+
+        return getBingoCard(bingoCard.getId());
+    }
+
+    public List<BingoCardResponse> getBingoCardsByOwner(User owner) {
+
+        // Find the  Bingo Cards
+        List<BingoCard> bingoCardList = bingoCardRepository.findAllByOwner(owner);
+
+        // Find the User's loot collection
+        LootCollection bingoCardLootCollection = lootCollectionRepository.findByOwner(owner);
+
+        // Create a list of BingoCardResponse
+        List<BingoCardResponse> bingoCardResponseList = new ArrayList<>();
+        for (BingoCard bingoCard : bingoCardList) {
+            BingoCardResponse bingoCardResponse = new BingoCardResponse(
+                    bingoCard.getId(),
+                    bingoCard.getOwner().getUsername(),
+                    bingoCard.getLayout().stream().map(item -> item.getName().toString()).toArray(String[]::new),
+                    bingoCardLootCollection.getItems()
+            );
+            bingoCardResponseList.add(bingoCardResponse);
+        }
+
+        return bingoCardResponseList;
+    }
+
+    public void deleteBingoCardById(String bingoCardId) {
+        bingoCardRepository.deleteById(bingoCardId);
+    }
+
+    public List<BingoCardResponse> getAllBingoCards() {
+        List<BingoCard> bingoCards = bingoCardRepository.findAll();
+
+        // Get General Bingo Card's loot collection
+        User generalBingoCardOwner = userRepository.findByUsername("general_bingo_card_owner")
+                .orElseThrow(() -> new RuntimeException("Could not find user with username: general_bingo_card_owner"));
+        LootCollection lootCollection = lootCollectionRepository.findByOwner(generalBingoCardOwner);
+
+        List<BingoCardResponse> bingoCardResponses = new ArrayList<>();
+        for (BingoCard bingoCard : bingoCards) {
+            if (bingoCard.getOwner().getUsername().equals("general_bingo_card_owner"))
+                continue;
+            bingoCardResponses.add(new BingoCardResponse(
+                    bingoCard.getId(),
+                    bingoCard.getOwner().getUsername(),
+                    bingoCard.getLayout().stream().map(item -> item.getName().toString()).toArray(String[]::new),
+                    lootCollection.getItems()
+            ));
+        }
+        return bingoCardResponses;
+    }
 }

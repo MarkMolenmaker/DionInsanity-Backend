@@ -54,6 +54,20 @@ public class ClueBingoController {
         return ResponseEntity.ok(itemResponseList);
     }
 
+    @GetMapping("/")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public ResponseEntity<?> getAllBingoCards() {
+        List<BingoCardResponse> bingoCardResponseList = clueBingoService.getAllBingoCards();
+        return ResponseEntity.ok(bingoCardResponseList);
+    }
+
+    @PostMapping("/{user_id}/add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addBingoCardToUser(@PathVariable String user_id) {
+        BingoCardResponse bingoCardResponse = clueBingoService.addBingoCardToUser(user_id);
+        return ResponseEntity.ok(bingoCardResponse);
+    }
+
     @PostMapping("/registerItems")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerItems() {
@@ -65,6 +79,13 @@ public class ClueBingoController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerGeneralBingoCardOwner() {
         clueBingoService.registerGeneralBingoCardOwner();
+        return ResponseEntity.ok("Successfully registered general bingo card owner");
+    }
+
+    @DeleteMapping("/{bingo_card_id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteBingoCardById(@PathVariable String bingo_card_id) {
+        clueBingoService.deleteBingoCardById(bingo_card_id);
         return ResponseEntity.ok("Successfully registered general bingo card owner");
     }
 

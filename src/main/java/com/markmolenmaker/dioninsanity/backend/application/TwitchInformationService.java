@@ -2,11 +2,13 @@ package com.markmolenmaker.dioninsanity.backend.application;
 
 import com.markmolenmaker.dioninsanity.backend.models.User;
 import com.markmolenmaker.dioninsanity.backend.payload.error.TwitchAccountNotFoundException;
+import com.markmolenmaker.dioninsanity.backend.payload.error.TwitchAuthorizationException;
 import com.markmolenmaker.dioninsanity.backend.payload.response.TwitchAccountResponse;
 import com.markmolenmaker.dioninsanity.backend.repository.UserRepository;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,10 @@ public class TwitchInformationService {
                     .header("Client-ID", twitchClientId)
                     .asJson();
 
+            if (userInfoResponse.getStatus() != 200) {
+                throw new TwitchAuthorizationException(userInfoResponse.getStatusText());
+            }
+
             // User info
             String twitchId = userInfoResponse.getBody().getObject().getJSONArray("data").getJSONObject(0).getString("id");
             String twitchLogin = userInfoResponse.getBody().getObject().getJSONArray("data").getJSONObject(0).getString("login");
@@ -46,7 +52,7 @@ public class TwitchInformationService {
             );
 
         } catch (Exception e) {
-            throw new TwitchAccountNotFoundException("Twitch account " + login + " not found.");
+            throw new TwitchAccountNotFoundException(e.getMessage());
         }
 
     }

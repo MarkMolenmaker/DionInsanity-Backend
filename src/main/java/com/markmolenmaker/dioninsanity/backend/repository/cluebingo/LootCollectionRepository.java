@@ -8,4 +8,5 @@ public interface LootCollectionRepository extends MongoRepository<LootCollection
 
     <Optional> LootCollection findByOwner(User owner);
 
+    boolean existsByOwner(User owner);
 }
