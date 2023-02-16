@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Positive;
 public class UpdateLootCollectionRequest {
 
     @NotBlank
-    private String bingoCardId;
-
-    @NotBlank
     private String owner;
 
     @NotBlank
@@ -20,10 +17,6 @@ public class UpdateLootCollectionRequest {
     @NotBlank
     @Positive
     private int amount;
-
-    public String getBingoCardId() {
-        return bingoCardId;
-    }
 
     public String getOwner() {
         return owner;

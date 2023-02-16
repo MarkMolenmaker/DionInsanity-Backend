@@ -63,4 +63,8 @@ public class LootCollection {
     public void reset() {
         items.replaceAll((k, v) -> 0);
     }
+
+    public void putItem(String name, int i) {
+        items.put(name, i);
+    }
 }

@@ -4,9 +4,11 @@ import com.markmolenmaker.dioninsanity.backend.models.User;
 import com.markmolenmaker.dioninsanity.backend.models.cluebingo.LootCollection;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface LootCollectionRepository extends MongoRepository<LootCollection, String> {
 
-    <Optional> LootCollection findByOwner(User owner);
+    Optional<LootCollection> findByOwner(User owner);
 
     boolean existsByOwner(User owner);
 }

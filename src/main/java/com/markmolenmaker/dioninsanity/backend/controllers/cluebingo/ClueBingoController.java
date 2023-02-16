@@ -5,13 +5,13 @@ import com.markmolenmaker.dioninsanity.backend.payload.request.cluebingo.Generat
 import com.markmolenmaker.dioninsanity.backend.payload.request.cluebingo.UpdateLootCollectionRequest;
 import com.markmolenmaker.dioninsanity.backend.payload.response.cluebingo.BingoCardResponse;
 import com.markmolenmaker.dioninsanity.backend.payload.response.cluebingo.ItemResponse;
+import com.markmolenmaker.dioninsanity.backend.payload.response.cluebingo.LootCollectionResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,6 +28,12 @@ public class ClueBingoController {
         return ResponseEntity.ok(bingoCardResponse);
     }
 
+    @GetMapping("/general/all")
+    public ResponseEntity<?> getAllGeneralBingoCardVariations() {
+        List<BingoCardResponse> bingoCardResponseList = clueBingoService.getAllGeneralBingoCardVariations();
+        return ResponseEntity.ok(bingoCardResponseList);
+    }
+
     @PostMapping("/general")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> generateGeneralBingoCard(@RequestBody GenerateGeneralBingoCardRequest requestBody) {
@@ -38,14 +44,27 @@ public class ClueBingoController {
     @PutMapping("/loot")
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<?> updateLootCollection(@Valid @RequestBody UpdateLootCollectionRequest updateLootCollectionRequest) {
-        BingoCardResponse bingoCardResponse = clueBingoService.updateLootCollection(
-                updateLootCollectionRequest.getBingoCardId(),
+        clueBingoService.updateLootCollection(
                 updateLootCollectionRequest.getOwner(),
                 updateLootCollectionRequest.getItem(),
                 updateLootCollectionRequest.getAction(),
                 updateLootCollectionRequest.getAmount()
         );
-        return ResponseEntity.ok(bingoCardResponse);
+        return ResponseEntity.ok("Successfully updated loot collection");
+    }
+
+    @GetMapping("/loot")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<?> getAllLootCollections() {
+        List<LootCollectionResponse> lootCollectionResponseList = clueBingoService.getAllLootCollections();
+        return ResponseEntity.ok(lootCollectionResponseList);
+    }
+
+    @DeleteMapping("/loot")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> resetAllLootCollections() {
+        clueBingoService.resetAllLootCollections();
+        return ResponseEntity.ok("Loot collections reset");
     }
 
     @GetMapping("/items")
@@ -55,7 +74,7 @@ public class ClueBingoController {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public ResponseEntity<?> getAllBingoCards() {
         List<BingoCardResponse> bingoCardResponseList = clueBingoService.getAllBingoCards();
         return ResponseEntity.ok(bingoCardResponseList);

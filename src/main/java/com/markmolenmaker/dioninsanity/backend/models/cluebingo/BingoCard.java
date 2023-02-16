@@ -20,6 +20,9 @@ public class BingoCard {
     @DBRef
     private List<Item> layout = new ArrayList<>();
 
+    @DBRef
+    private List<Item> bonusLayout = new ArrayList<>();
+
     public BingoCard() {}
 
     public String getId() {
@@ -44,6 +47,23 @@ public class BingoCard {
 
     public void setLayout(List<Item> layout) {
         this.layout = layout;
+
+        // Pick 5 unique items from the layout and add them to the bonus layout
+        List<Item> copy = new ArrayList<>(layout);
+        for (int i = 0; i < 5; i++) {
+            int randomIndex = (int) (Math.random() * copy.size());
+            Item item = copy.get(randomIndex);
+            copy.remove(randomIndex);
+            this.bonusLayout.add(item);
+        }
+    }
+
+    public List<Item> getBonusLayout() {
+        return bonusLayout;
+    }
+
+    public void setBonusLayout(List<Item> bonusLayout) {
+        this.bonusLayout = bonusLayout;
     }
 
 }

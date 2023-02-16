@@ -1,5 +1,6 @@
 package com.markmolenmaker.dioninsanity.backend.application;
 
+import com.markmolenmaker.dioninsanity.backend.application.cluebingo.ClueBingoService;
 import com.markmolenmaker.dioninsanity.backend.models.ERole;
 import com.markmolenmaker.dioninsanity.backend.models.Role;
 import com.markmolenmaker.dioninsanity.backend.models.User;
@@ -43,6 +44,9 @@ public class TwitchAuthorizationService {
 
     @Autowired
     LootCollectionRepository lootCollectionRepository;
+
+    @Autowired
+    ClueBingoService clueBingoService;
 
     @Autowired
     RoleRepository roleRepository;
@@ -123,11 +127,8 @@ public class TwitchAuthorizationService {
             userRepository.save(user);
 
             // Create loot collection if it doesn't exist
-            if (!lootCollectionRepository.existsByOwner(user)) {
-                LootCollection lootCollection = new LootCollection();
-                lootCollection.setOwner(user);
-                lootCollectionRepository.save(lootCollection);
-            }
+            if (!lootCollectionRepository.existsByOwner(user))
+                clueBingoService.createLootCollection(user);
 
             // Signin
             Authentication authentication = authenticationManager.authenticate(
