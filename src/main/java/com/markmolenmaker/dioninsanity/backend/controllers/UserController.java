@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -37,6 +38,13 @@ public class UserController {
             registerUserRequest.getProfileImageUrl()
         );
         return ResponseEntity.ok(userResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@Valid @PathVariable String id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("Successfully deleted user");
     }
 
     @ExceptionHandler(UserRegistrationException.class)

@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -106,6 +108,15 @@ public class ClueBingoController {
     public ResponseEntity<?> deleteBingoCardById(@PathVariable String bingo_card_id) {
         clueBingoService.deleteBingoCardById(bingo_card_id);
         return ResponseEntity.ok("Successfully registered general bingo card owner");
+    }
+
+    @GetMapping("/reset")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> reset() {
+        clueBingoService.registerItems();
+        clueBingoService.resetAllLootCollections();
+        clueBingoService.generateGeneralBingoCard(new String[]{});
+        return ResponseEntity.ok("sucess");
     }
 
 }

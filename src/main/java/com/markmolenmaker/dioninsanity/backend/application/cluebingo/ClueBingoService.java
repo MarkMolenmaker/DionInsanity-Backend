@@ -91,8 +91,20 @@ public class ClueBingoService {
         if (items_scope.length == 0) items = new ArrayList<>(List.of(EItem.values()));
         else  items = new ArrayList<>(List.of(Arrays.stream(items_scope).map(EItem::valueOf).toArray(EItem[]::new)));
         for (int i = 0; i < 25; i++) {
+            // If index is 12, add CLUE_SCROLL
+            if (i == 12) {
+                layout.add(itemRepository.findByName("CLUE_SCROLL"));
+                items.stream().filter(item -> item.name().equals("CLUE_SCROLL")).findFirst().ifPresent(items::remove);
+                continue;
+            }
+
             int randomIndex = (int) (Math.random() * items.size());
             Item item = itemRepository.findByName(items.get(randomIndex).name());
+            // Retry if the item is CLUE_SCROLL
+            if (item.getName() == EItem.CLUE_SCROLL) {
+                i--;
+                continue;
+            }
             items.remove(randomIndex);
             layout.add(item);
         }
@@ -212,8 +224,20 @@ public class ClueBingoService {
         // Layout based on the General Bingo Card
         List<EItem> items = Arrays.stream(getGeneralBingoCard().getLayout()).map(EItem::valueOf).collect(Collectors.toList());
         for (int i = 0; i < 25; i++) {
+            // If index is 12, add CLUE_SCROLL
+            if (i == 12) {
+                layout.add(itemRepository.findByName("CLUE_SCROLL"));
+                items.stream().filter(item -> item.name().equals("CLUE_SCROLL")).findFirst().ifPresent(items::remove);
+                continue;
+            }
+
             int randomIndex = (int) (Math.random() * items.size());
             Item item = itemRepository.findByName(items.get(randomIndex).name());
+            // Retry if the item is CLUE_SCROLL
+            if (item.getName() == EItem.CLUE_SCROLL) {
+                i--;
+                continue;
+            }
             items.remove(randomIndex);
             layout.add(item);
         }
